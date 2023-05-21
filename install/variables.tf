@@ -25,7 +25,7 @@ variable "service_network_cidr" {
 
 variable "vpc_cidr_block" {
   type        = string
-  default     = "192.168.0.0/24"
+  default     = "10.1.0.0/16"
 }
 
 variable "cluster_network_host_prefix" {
@@ -41,11 +41,13 @@ variable "aws_worker_instance_type" {
 variable "aws_worker_root_volume_type" {
   type        = string
   description = "The type of volume for the root block device of worker nodes."
+  default = "gp3"
 }
 
 variable "aws_worker_root_volume_size" {
   type        = string
   description = "The size of the volume in gigabytes for the root block device of worker nodes."
+  default = 120
 }
 
 variable "aws_worker_root_volume_iops" {
@@ -56,12 +58,7 @@ The amount of provisioned IOPS for the root block device of worker nodes.
 Ignored if the volume type is not io1.
 EOF
 
-}
-
-variable "master_count" {
-  type        = number
-  description = "The number of master nodes."
-  default     = 3
+  default = "0"
 }
 
 variable "infra_count" {
@@ -73,17 +70,19 @@ variable "infra_count" {
 variable "aws_infra_instance_type" {
   type = string
   description = "Instance type for the infra node(s). Example: `m4.large`."
-  default = "m5.xlarge"
+  default = "m6i.xlarge"
 }
 
 variable "aws_infra_root_volume_type" {
   type        = string
   description = "The type of volume for the root block device of infra nodes."
+  default = "gp3"
 }
 
 variable "aws_infra_root_volume_size" {
   type        = string
   description = "The size of the volume in gigabytes for the root block device of infra nodes."
+  default = 120
 }
 
 variable "aws_infra_root_volume_iops" {
@@ -93,19 +92,19 @@ variable "aws_infra_root_volume_iops" {
 The amount of provisioned IOPS for the root block device of infra nodes.
 Ignored if the volume type is not io1.
 EOF
+  default = 0
 
+}
+
+variable "public_ssh_key" {
+  type = string
+  description = "SSH.pub key that require to ssh into the nodes."
 }
 
 
 variable "openshift_pull_secret" {
   type        = string
-  default     = "./openshift_pull_secret.json"
-}
-
-variable "openshift_installer_url" {
-  type        = string
-  description = "The URL to download OpenShift installer."
-  default     = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest"
+  description = "Value will be getting from environments tf.vars"
 }
 
 # variable "aws_access_key_id" {
@@ -121,7 +120,7 @@ variable "openshift_installer_url" {
 variable "aws_region" {
   type        = string
   description = "AWS region"
-  default     = "us-east-1"
+  default     = "ap-southeast-1"
 }
 
 variable "aws_worker_availability_zones" {
@@ -134,17 +133,17 @@ variable "aws_private_subnets" {
   description = "The private subnets for workers. This is used when the subnets are preconfigured."
 }
 
+variable "publish_method" {
+  type = string
+  description = "The publish strategy for openshift. Accepted Value (Internal | External)"
+}
+
 variable "airgapped" {
   type = map(string)
   default = {
-    airgapped  = false
+    enabled  = false
     repository = ""
   }
-}
-
-variable "openshift_ssh_key" {
-  type    = string
-  default = ""
 }
 
 variable "openshift_additional_trust_bundle" {
@@ -160,4 +159,9 @@ variable "proxy_config" {
   default = {
     enabled = false
   }
+}
+
+variable "private_route53_hostedZone" {
+  type = string
+  description = "Private Route53 HostedZone id"
 }

@@ -1,21 +1,3 @@
-# resource "null_resource" "aws_credentials" {
-#   provisioner "local-exec" {
-#     command = "mkdir -p ~/.aws"
-#   }
-
-#   provisioner "local-exec" {
-#     command = "echo '${data.template_file.aws_credentials.rendered}' > ~/.aws/credentials"
-#   }
-# }
-
-# data "template_file" "aws_credentials" {
-#   template = <<-EOF
-# [default]
-# aws_access_key_id = ${var.aws_access_key_id}
-# aws_secret_access_key = ${var.aws_secret_access_key}
-# EOF
-# }
-
 locals {
   zone_infra_replicas = [for idx in range(length(var.aws_worker_availability_zones)) : floor(var.infra_count / length(var.aws_worker_availability_zones)) + (idx + 1 > (var.infra_count % length(var.aws_worker_availability_zones)) ? 0 : 1)]
 }
@@ -30,39 +12,39 @@ data "template_file" "install_config_yaml" {
   template = <<-EOF
 apiVersion: v1
 baseDomain: ${var.domain}
+credentialsMode: Manual
 compute:
 - hyperthreading: Enabled
   name: worker
   replicas: 3
-  platform:
-    aws:
-      rootVolume:
-        iops: ${var.aws_worker_root_volume_iops}
-        size: ${var.aws_worker_root_volume_size}
-        type: ${var.aws_worker_root_volume_type}
-      type: ${var.aws_worker_instance_type}
-      zones:
-      %{ for zone in var.aws_worker_availability_zones}
-      - ${zone}%{ endfor }
 controlPlane:
   hyperthreading: Enabled
   name: master
-  replicas: ${var.master_count}
+  replicas: 3
 metadata:
   name: ${var.clustername}
 networking:
   clusterNetworks:
   - cidr: ${var.cluster_network_cidr}
     hostPrefix: ${var.cluster_network_host_prefix}
-  machineCIDR:  ${var.vpc_cidr_block}
-  networkType: OpenShiftSDN
+  machineNetwork:
+  - cidr: ${var.vpc_cidr_block}
+  networkType: OVNKubernetes
   serviceNetwork:
   - ${var.service_network_cidr}
 platform:
   aws:
     region: ${var.aws_region}
-pullSecret: '${file(var.openshift_pull_secret)}'
-sshKey: '${local.public_ssh_key}'
+    subnets:
+    %{~ for subnets in var.aws_private_subnets ~}
+    - ${subnets}
+    %{~ endfor ~}
+    amiID: ${var.ami}
+    hostedZone: ${var.private_route53_hostedZone}
+fips: false
+pullSecret: '${var.openshift_pull_secret}'
+sshKey: '${var.public_ssh_key}'
+publish: ${var.publish_method}
 %{if var.airgapped["enabled"]}imageContentSources:
 - mirrors:
   - ${var.airgapped["repository"]}

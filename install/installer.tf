@@ -3,10 +3,10 @@ resource "null_resource" "openshift_installer" {
     command = <<EOF
 case $(uname -s) in
   Linux)
-    wget -r -l1 -np -nd ${var.openshift_installer_url} -q -P ${path.root}/installer-files/ -A 'openshift-install-linux-4*.tar.gz'
+    aws s3 cp s3://project-tools-112030507005/openshift-install-linux.tar.gz ${path.root}/installer-files/openshift-install-linus-4*.tar.gz
     ;;
   Darwin)
-    wget -r -l1 -np -nd ${var.openshift_installer_url} -q -P ${path.root}/installer-files/ -A 'openshift-install-mac-4*.tar.gz'
+    aws s3 cp s3://project-tools-112030507005/openshift-install-mac.tar.gz ${path.root}/installer-files/openshift-install-mac-4*.tar.gz
     ;;
   *) exit 1
     ;;
@@ -15,11 +15,11 @@ EOF
   }
 
   provisioner "local-exec" {
-    command = "tar zxvf ${path.root}/installer-files//openshift-install-*-4*.tar.gz -C ${path.root}/installer-files/"
+    command = "tar zxvf ${path.root}/installer-files//openshift-install-*.tar.gz -C ${path.root}/installer-files/"
   }
 
   provisioner "local-exec" {
-    command = "rm -f ${path.root}/installer-files//openshift-install-*-4*.tar.gz ${path.root}/installer-files//robots*.txt* ${path.root}/installer-files//README.md"
+    command = "rm -f ${path.root}/installer-files//openshift-install-*.tar.gz ${path.root}/installer-files//robots*.txt* ${path.root}/installer-files//README.md"
   }
 }
 
@@ -28,10 +28,10 @@ resource "null_resource" "openshift_client" {
     command = <<EOF
 case $(uname -s) in
   Linux)
-    wget -r -l1 -np -nd ${var.openshift_installer_url} -q -P ${path.root}/installer-files/ -A 'openshift-client-linux-4*.tar.gz'
+    aws s3 cp s3://project-tools-112030507005/openshift-client-linux.tar.gz ${path.root}/installer-files/openshift-client-linus-4*.tar.gz
     ;;
   Darwin)
-    wget -r -l1 -np -nd ${var.openshift_installer_url} -q -P ${path.root}/installer-files/ -A 'openshift-client-mac-4*.tar.gz'
+    aws s3 cp s3://project-tools-112030507005/openshift-client-mac.tar.gz ${path.root}/installer-files/openshift-client-mac-4*.tar.gz
     ;;
   *)
     exit 1

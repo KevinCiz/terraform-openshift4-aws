@@ -12,9 +12,6 @@ EOF
   default = "10.0.0.0/16"
 }
 
-
-
-
 variable "base_domain" {
   type = string
 
@@ -57,14 +54,14 @@ variable "use_ipv6" {
 
 variable "openshift_version" {
   type    = string
-  default = "4.6.28"
+  default = "4.12.15"
 }
 
 variable "airgapped" {
   type = map(string)
   default = {
     enabled  = false
-    repository = ""
+    repository = "mirror-registry.com"
   }
 }
 
@@ -85,7 +82,7 @@ variable "openshift_additional_trust_bundle" {
   default     = ""
 }
 
-variable "openshift_ssh_key" {
+variable "public_ssh_key" {
   description = "Path to SSH Public Key file to use for OpenShift Installation"
   type        = string
   default     = ""

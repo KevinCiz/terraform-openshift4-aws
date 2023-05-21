@@ -15,20 +15,20 @@ variable "aws_bootstrap_instance_type" {
 
 variable "aws_master_instance_type" {
   type        = string
-  description = "Instance type for the master node(s). Default: `m4.xlarge`."
-  default     = "m5.xlarge"
+  description = "Instance type for the master node(s). Default: `m6i.xlarge`."
+  default     = "m6i.xlarge"
 }
 
 variable "aws_worker_instance_type" {
   type        = string
-  description = "Instance type for the worker node(s). Default: `m4.2xlarge`."
-  default     = "m5.2xlarge"
+  description = "Instance type for the worker node(s). Default: `m6i.2xlarge`."
+  default     = "m6i.2xlarge"
 }
 
 variable "aws_infra_instance_type" {
   type        = string
-  description = "Instance type for the worker node(s). Default: `m4.2xlarge`."
-  default     = "m5.xlarge"
+  description = "Instance type for the worker node(s). Default: `m6i.2xlarge`."
+  default     = "m6i.xlarge"
 }
 
 # variable "aws_ami" {
@@ -146,6 +146,7 @@ EOF
 variable "aws_region" {
   type        = string
   description = "The target AWS region for the cluster."
+  default = "ap-southeast-1"
 }
 
 variable "aws_azs" {
