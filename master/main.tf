@@ -104,7 +104,7 @@ EOF
 
 resource "aws_network_interface" "master" {
   count     = var.instance_count
-  subnet_id = var.az_to_subnet_id[var.availability_zones[count.index]]
+  subnet_id = var.subnet_id
   
   security_groups = var.master_sg_ids
   

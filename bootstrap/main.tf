@@ -16,7 +16,7 @@ data "aws_partition" "current" {}
 data "aws_ebs_default_kms_key" "current" {}
 
 resource "aws_s3_bucket" "ignition" {
-  acl = "private"
+  bucket = "${var.cluster_id}-bootstrap"
 
   tags = merge(
     {
@@ -30,9 +30,35 @@ resource "aws_s3_bucket" "ignition" {
   }
 }
 
-resource "aws_s3_bucket_object" "ignition" {
-  bucket  = aws_s3_bucket.ignition.id
-  key     = "bootstrap.ign"
+resource "aws_s3_bucket_ownership_controls" "ignition" {
+  bucket = aws_s3_bucket.ignition.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "ignition" {
+  bucket = aws_s3_bucket.ignition.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_acl" "ignition" {
+  depends_on = [
+    aws_s3_bucket_ownership_controls.ignition,
+    aws_s3_bucket_public_access_block.ignition,
+  ]
+
+  bucket = aws_s3_bucket.ignition.id
+  acl    = "public-read"
+}
+
+resource "aws_s3_object" "ignition" {
+  bucket = aws_s3_bucket.ignition.id
+  key    = "bootstrap.ign"
   content = var.ignition
   acl     = "private"
 
@@ -48,6 +74,7 @@ resource "aws_s3_bucket_object" "ignition" {
   lifecycle {
     ignore_changes = all
   }
+
 }
 
 data "ignition_config" "redirect" {

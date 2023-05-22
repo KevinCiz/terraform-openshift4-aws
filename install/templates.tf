@@ -44,7 +44,7 @@ platform:
 fips: false
 pullSecret: '${var.openshift_pull_secret}'
 sshKey: '${var.public_ssh_key}'
-publish: ${var.publish_method}
+publish: ${var.publish_strategy}
 %{if var.airgapped["enabled"]}imageContentSources:
 - mirrors:
   - ${var.airgapped["repository"]}

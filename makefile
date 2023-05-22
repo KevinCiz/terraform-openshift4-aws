@@ -3,3 +3,6 @@ plan:
 
 apply:
 	- terraform apply -var-file="./environments/central.tfvars" -auto-approve
+
+destroy:
+	- terraform destroy -var-file="./environments/central.tfvars" -auto-approve

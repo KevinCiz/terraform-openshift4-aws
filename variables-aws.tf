@@ -176,7 +176,7 @@ variable "aws_private_subnets" {
 variable "aws_publish_strategy" {
   type        = string
   description = "The cluster publishing strategy, either Internal or External"
-  default = "External"
+  default = "Internal"
 }
 
 variable "aws_skip_region_validation" {

@@ -3,9 +3,8 @@ variable "availability_zones" {
   description = "List of the availability zones in which to create the masters. The length of this list must match instance_count."
 }
 
-variable "az_to_subnet_id" {
-  type        = map(string)
-  description = "Map from availability zone name to the ID of the subnet in that availability zone"
+variable "subnet_id" {
+  type = string
 }
 
 variable "cluster_id" {

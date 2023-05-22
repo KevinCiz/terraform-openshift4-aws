@@ -133,7 +133,7 @@ variable "aws_private_subnets" {
   description = "The private subnets for workers. This is used when the subnets are preconfigured."
 }
 
-variable "publish_method" {
+variable "publish_strategy" {
   type = string
   description = "The publish strategy for openshift. Accepted Value (Internal | External)"
 }

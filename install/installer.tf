@@ -111,6 +111,7 @@ resource "null_resource" "generate_ignition_config" {
     local_file.configure-ingress-job-clusterrole,
     local_file.configure-ingress-job-clusterrolebinding,
     local_file.configure-ingress-job,
+    null_resource.generate_manifests,
   ]
 
   triggers = {
@@ -139,18 +140,18 @@ resource "null_resource" "generate_ignition_config" {
   }
 }
 
-resource "null_resource" "delete_aws_resources" {
-  depends_on = [
-    null_resource.cleanup
-  ]
+# resource "null_resource" "delete_aws_resources" {
+#   depends_on = [
+#     null_resource.cleanup
+#   ]
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "${path.module}/aws_cleanup.sh"
-    #command = "${path.root}/installer-files//openshift-install --dir=${path.root}/installer-files/temp destroy cluster"
-  }
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = "${path.module}/aws_cleanup.sh"
+#     #command = "${path.root}/installer-files//openshift-install --dir=${path.root}/installer-files/temp destroy cluster"
+#   }
 
-}
+# }
 
 resource "null_resource" "cleanup" {
   depends_on = [
