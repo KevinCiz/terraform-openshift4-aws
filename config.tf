@@ -9,7 +9,7 @@ variable "machine_cidr" {
 The IP address space from which to assign machine IPs.
 Default "10.0.0.0/16"
 EOF
-  default = "10.1.0.0/16"
+  default     = "10.1.0.0/16"
 }
 
 variable "base_domain" {
@@ -36,19 +36,19 @@ EOF
 }
 
 variable "openshift_pull_secret" {
-  type = string
+  type        = string
   description = "File containing pull secret - get it from https://cloud.redhat.com/openshift/install/pull-secret"
 }
 
 variable "use_ipv4" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
   description = "not implemented"
 }
 
 variable "use_ipv6" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
   description = "not implemented"
 }
 
@@ -60,13 +60,13 @@ variable "openshift_version" {
 variable "airgapped" {
   type = map(string)
   default = {
-    enabled  = false
+    enabled    = false
     repository = "mirror-registry.com"
   }
 }
 
 variable "proxy_config" {
-  type = map(string)
+  type        = map(string)
   description = "Not implemented"
   default = {
     enabled    = false

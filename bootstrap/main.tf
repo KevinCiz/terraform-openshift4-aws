@@ -13,6 +13,8 @@ terraform {
 
 data "aws_partition" "current" {}
 
+data "aws_caller_identity" "current" {}
+
 data "aws_ebs_default_kms_key" "current" {}
 
 resource "aws_s3_bucket" "ignition" {
@@ -92,7 +94,7 @@ resource "aws_iam_instance_profile" "bootstrap" {
 resource "aws_iam_role" "bootstrap" {
   name = "${var.cluster_id}-bootstrap-role"
   path = "/"
-
+  permissions_boundary = var.restricted ? var.permission_boundary_arn : ""
   assume_role_policy = <<EOF
 {
     "Version": "2012-10-17",

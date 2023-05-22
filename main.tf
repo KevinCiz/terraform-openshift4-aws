@@ -5,11 +5,7 @@ locals {
     },
     var.aws_extra_tags,
   )
-  aws_azs         = (var.aws_azs != null) ? var.aws_azs : tolist([join("",[var.aws_region,"a"]),join("",[var.aws_region,"b"])])
-  rhcos_image = "ami-06871a4749ba8de33"
-  vpc_id = "vpc-0c60661a26d31a3c4"
-  vpc_cidr_range = "10.1.0.0/16"
-  subnet_ids = ["subnet-08e10c6969d08ee2a"]
+  aws_azs = (var.aws_azs != null) ? var.aws_azs : tolist([join("", [var.aws_region, "a"]), join("", [var.aws_region, "b"])])
 }
 
 provider "aws" {
@@ -21,20 +17,22 @@ provider "aws" {
 module "bootstrap" {
   source = "./bootstrap"
 
-  ami                      = local.rhcos_image
+  ami                      = var.rhcos_image
   instance_type            = var.aws_bootstrap_instance_type
   cluster_id               = module.installer.infraID
   ignition                 = module.installer.bootstrap_ign
-  subnet_id                = local.subnet_ids[0]
+  subnet_id                = var.aws_private_subnets[0]
   target_group_arns        = module.vpc.aws_lb_target_group_arns
   target_group_arns_length = module.vpc.aws_lb_target_group_arns_length
-  vpc_id                   = local.vpc_id
-  vpc_cidrs                = [ local.vpc_cidr_range ]
+  vpc_id                   = var.vpc_id
+  vpc_cidrs                = [var.vpc_cidr_range]
   vpc_security_group_ids   = [module.vpc.master_sg_id]
   volume_kms_key_id        = var.aws_master_root_volume_kms_key_id
   publish_strategy         = var.aws_publish_strategy
+  restricted               = var.restricted
+  permission_boundary_arn  = var.permission_boundary_arn
 
-  tags = local.tags
+  tags = merge(local.tags, var.restricted ? var.restricted_ec2_tags : {})
 }
 
 module "masters" {
@@ -43,10 +41,10 @@ module "masters" {
   cluster_id    = module.installer.infraID
   instance_type = var.aws_master_instance_type
 
-  tags = local.tags
+  tags = merge(local.tags, var.restricted ? var.restricted_ec2_tags : {})
 
   availability_zones       = local.aws_azs
-  subnet_id          = local.subnet_ids[0]
+  subnet_id                = var.aws_private_subnets[0]
   instance_count           = 3
   master_sg_ids            = [module.vpc.master_sg_id]
   root_volume_iops         = var.aws_master_root_volume_iops
@@ -56,7 +54,7 @@ module "masters" {
   root_volume_kms_key_id   = var.aws_master_root_volume_kms_key_id
   target_group_arns        = module.vpc.aws_lb_target_group_arns
   target_group_arns_length = module.vpc.aws_lb_target_group_arns_length
-  ec2_ami                  = local.rhcos_image
+  ec2_ami                  = var.rhcos_image
   user_data_ign            = module.installer.master_ign
   publish_strategy         = var.aws_publish_strategy
 }
@@ -65,13 +63,15 @@ module "iam" {
   source = "./iam"
 
   cluster_id = module.installer.infraID
+  restricted               = var.restricted
+  permission_boundary_arn  = var.permission_boundary_arn
 
   tags = local.tags
 }
 
 
 module "dns" {
-  count                    = var.openshift_byo_dns ? 0 : 1
+  count = var.openshift_byo_dns ? 0 : 1
 
   source = "./route53"
 
@@ -83,7 +83,7 @@ module "dns" {
   cluster_domain           = "${var.cluster_name}.${var.base_domain}"
   cluster_id               = module.installer.infraID
   tags                     = local.tags
-  vpc_id                   = local.vpc_id
+  vpc_id                   = var.vpc_id
   region                   = var.aws_region
   publish_strategy         = var.aws_publish_strategy
 }
@@ -91,14 +91,14 @@ module "dns" {
 module "vpc" {
   source = "./vpc"
 
-  cidr_blocks      = [ local.vpc_cidr_range ]
-  cluster_id       = module.installer.infraID
-  region           = var.aws_region
-  vpc              = local.vpc_id
-  public_subnets   = ["subnet-08e10c6969d08ee2a"]
-  private_subnets  = ["subnet-01402bf17b063d40e"]
-  publish_strategy = var.aws_publish_strategy
-  airgapped = var.airgapped
+  cidr_blocks        = [var.vpc_cidr_range]
+  cluster_id         = module.installer.infraID
+  region             = var.aws_region
+  vpc                = var.vpc_id
+  public_subnets     = []
+  private_subnets    = var.aws_private_subnets
+  publish_strategy   = var.aws_publish_strategy
+  airgapped          = var.airgapped
   availability_zones = local.aws_azs
 
   tags = local.tags
@@ -107,21 +107,21 @@ module "vpc" {
 module "installer" {
   source = "./install"
 
-  ami = local.rhcos_image
-  private_route53_hostedZone = "Z10363623QINZFL0RQYO7"
-  clustername = var.cluster_name
-  domain = var.base_domain
-  vpc_cidr_block = local.vpc_cidr_range
-  infra_count = var.infra_count
-  publish_strategy = var.aws_publish_strategy
-  openshift_pull_secret = var.openshift_pull_secret
-  aws_worker_availability_zones = local.aws_azs
-  aws_worker_instance_type = var.aws_worker_instance_type
-  aws_infra_instance_type = var.aws_infra_instance_type
-  aws_private_subnets = ["subnet-01402bf17b063d40e","subnet-08e10c6969d08ee2a"]
-  airgapped = var.airgapped
-  proxy_config = var.proxy_config
-  public_ssh_key =  var.public_ssh_key
+  ami                               = var.rhcos_image
+  private_route53_hostedZone        = var.private_hosted_zone
+  clustername                       = var.cluster_name
+  domain                            = var.base_domain
+  vpc_cidr_block                    = var.vpc_cidr_range
+  infra_count                       = var.infra_count
+  publish_strategy                  = var.aws_publish_strategy
+  openshift_pull_secret             = var.openshift_pull_secret
+  aws_worker_availability_zones     = local.aws_azs
+  aws_worker_instance_type          = var.aws_worker_instance_type
+  aws_infra_instance_type           = var.aws_infra_instance_type
+  aws_private_subnets               = var.aws_private_subnets
+  airgapped                         = var.airgapped
+  proxy_config                      = var.proxy_config
+  public_ssh_key                    = var.public_ssh_key
   openshift_additional_trust_bundle = var.openshift_additional_trust_bundle
-  byo_dns = var.openshift_byo_dns
+  byo_dns                           = var.openshift_byo_dns
 }

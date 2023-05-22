@@ -1,5 +1,11 @@
+init-local:
+	- terraform init -reconfigure -plugin-dir=/usr/local/bin/providers
+
+init:
+	- terraform init 
+
 plan:
-	- terraform plan -var-file="./environments/central.tfvars" 
+	- terraform plan -refresh=true -var-file="./environments/central.tfvars" 
 
 apply:
 	- terraform apply -var-file="./environments/central.tfvars" -auto-approve

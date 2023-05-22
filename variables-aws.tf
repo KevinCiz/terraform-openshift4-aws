@@ -10,7 +10,7 @@ EOF
 variable "aws_bootstrap_instance_type" {
   type        = string
   description = "Instance type for the bootstrap node. Default: `i3.xlarge`."
-  default = "i3.xlarge"
+  default     = "i3.xlarge"
 }
 
 variable "aws_master_instance_type" {
@@ -49,15 +49,15 @@ EOF
 }
 
 variable "aws_master_root_volume_type" {
-  type = string
+  type        = string
   description = "The type of volume for the root block device of master nodes."
-  default = "gp2"
+  default     = "gp2"
 }
 
 variable "aws_master_root_volume_size" {
-  type = string
+  type        = string
   description = "The size of the volume in gigabytes for the root block device of master nodes."
-  default = 200
+  default     = 200
 }
 
 variable "aws_master_root_volume_iops" {
@@ -67,20 +67,20 @@ variable "aws_master_root_volume_iops" {
 The amount of provisioned IOPS for the root block device of master nodes.
 Ignored if the volume type is not io1.
 EOF
-  default = 0
+  default     = 0
 
 }
 
 variable "aws_worker_root_volume_type" {
   type        = string
   description = "The type of volume for the root block device of worker nodes."
-  default = "gp2"
+  default     = "gp2"
 }
 
 variable "aws_worker_root_volume_size" {
   type        = string
   description = "The size of the volume in gigabytes for the root block device of worker nodes."
-  default = 200
+  default     = 200
 }
 
 variable "aws_worker_root_volume_iops" {
@@ -90,7 +90,7 @@ variable "aws_worker_root_volume_iops" {
 The amount of provisioned IOPS for the root block device of worker nodes.
 Ignored if the volume type is not io1.
 EOF
-  default = 0
+  default     = 0
 
 }
 
@@ -102,13 +102,13 @@ variable "infra_count" {
 variable "aws_infra_root_volume_type" {
   type        = string
   description = "The type of volume for the root block device of infra nodes."
-  default = "gp2"
+  default     = "gp2"
 }
 
 variable "aws_infra_root_volume_size" {
   type        = string
   description = "The size of the volume in gigabytes for the root block device of infra nodes."
-  default = 200
+  default     = 200
 }
 
 variable "aws_infra_root_volume_iops" {
@@ -118,13 +118,13 @@ variable "aws_infra_root_volume_iops" {
 The amount of provisioned IOPS for the root block device of infra nodes.
 Ignored if the volume type is not io1.
 EOF
-  default = 0
+  default     = 0
 
 }
 
 variable "aws_master_root_volume_encrypted" {
-  type = bool
-  default = true
+  type        = bool
+  default     = true
   description = <<EOF
 Indicates whether the root EBS volume for master is encrypted. Encrypted Amazon EBS volumes
 may only be attached to machines that support Amazon EBS encryption.
@@ -146,13 +146,13 @@ EOF
 variable "aws_region" {
   type        = string
   description = "The target AWS region for the cluster."
-  default = "ap-southeast-1"
+  default     = "ap-southeast-1"
 }
 
 variable "aws_azs" {
- type = list(string)
- description = "The availability zones in which to create the nodes."
- default = null
+  type        = list(string)
+  description = "The availability zones in which to create the nodes."
+  default     = null
 }
 
 variable "aws_vpc" {
@@ -176,7 +176,7 @@ variable "aws_private_subnets" {
 variable "aws_publish_strategy" {
   type        = string
   description = "The cluster publishing strategy, either Internal or External"
-  default = "Internal"
+  default     = "Internal"
 }
 
 variable "aws_skip_region_validation" {
@@ -185,12 +185,37 @@ variable "aws_skip_region_validation" {
   description = "This decides if the AWS provider should validate if the region is known."
 }
 
-# variable "aws_access_key_id" {
-#   type        = string
-#   description = "AWS Key"
-# }
+variable "rhcos_image" {
+  type        = string
+  description = "RHCOS ami to be used"
+}
 
-# variable "aws_secret_access_key" {
-#   type        = string
-#   description = "AWS Secret"
-# }
+variable "vpc_id" {
+  type        = string
+  description = "Vpc id"
+}
+
+variable "vpc_cidr_range" {
+  type        = string
+  description = "the cidr range of the vpc (this need to match the one in the VPC id)"
+}
+
+variable "private_hosted_zone" {
+  type        = string
+  description = "Route53 Private hosted Zone ID"
+}
+
+variable "restricted" {
+  type        = bool
+  description = "Toggle this if ur need to use permission boundary and add Ec2 Tagging"
+}
+
+variable "permission_boundary_arn" {
+  type = string
+  description = "iam permission boundary arn"
+}
+
+variable "restricted_ec2_tags" {
+  type = map(string)
+  description = "this tags is for restricted mode"
+}

@@ -3,10 +3,10 @@ resource "null_resource" "openshift_installer" {
     command = <<EOF
 case $(uname -s) in
   Linux)
-    aws s3 cp s3://project-tools-112030507005/openshift-install-linux.tar.gz ${path.root}/installer-files/openshift-install-linus-4*.tar.gz
+    aws s3 cp s3://project-tools-${data.aws_caller_identity.current.account_id}/openshift-install-linux.tar.gz ${path.root}/installer-files/openshift-install-linus-4*.tar.gz
     ;;
   Darwin)
-    aws s3 cp s3://project-tools-112030507005/openshift-install-mac.tar.gz ${path.root}/installer-files/openshift-install-mac-4*.tar.gz
+    aws s3 cp s3://project-tools-${data.aws_caller_identity.current.account_id}/openshift-install-mac.tar.gz ${path.root}/installer-files/openshift-install-mac-4*.tar.gz
     ;;
   *) exit 1
     ;;
@@ -28,10 +28,10 @@ resource "null_resource" "openshift_client" {
     command = <<EOF
 case $(uname -s) in
   Linux)
-    aws s3 cp s3://project-tools-112030507005/openshift-client-linux.tar.gz ${path.root}/installer-files/openshift-client-linus-4*.tar.gz
+    aws s3 cp s3://project-tools-${data.aws_caller_identity.current.account_id}/openshift-client-linux.tar.gz ${path.root}/installer-files/openshift-client-linus-4*.tar.gz
     ;;
   Darwin)
-    aws s3 cp s3://project-tools-112030507005/openshift-client-mac.tar.gz ${path.root}/installer-files/openshift-client-mac-4*.tar.gz
+    aws s3 cp s3://project-tools-${data.aws_caller_identity.current.account_id}/openshift-client-mac.tar.gz ${path.root}/installer-files/openshift-client-mac-4*.tar.gz
     ;;
   *)
     exit 1
@@ -139,19 +139,6 @@ resource "null_resource" "generate_ignition_config" {
     command = "${path.root}/installer-files//openshift-install --dir=${path.root}/installer-files//temp create ignition-configs"
   }
 }
-
-# resource "null_resource" "delete_aws_resources" {
-#   depends_on = [
-#     null_resource.cleanup
-#   ]
-
-#   provisioner "local-exec" {
-#     when    = destroy
-#     command = "${path.module}/aws_cleanup.sh"
-#     #command = "${path.root}/installer-files//openshift-install --dir=${path.root}/installer-files/temp destroy cluster"
-#   }
-
-# }
 
 resource "null_resource" "cleanup" {
   depends_on = [

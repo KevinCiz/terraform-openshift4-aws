@@ -1,0 +1,13 @@
+base_domain = "ocp-test.com"
+cluster_name = "ocp4-central"
+openshift_pull_secret = ""
+public_ssh_key = ""
+openshift_version = "4.12.15"
+rhcos_image="ami-06871a4749ba8de33"
+vpc_id="vpc-0c60661a26d31a3c4"
+vpc_cidr_range = "10.1.0.0/16"
+aws_private_subnets = ["subnet-01402bf17b063d40e"]
+private_hosted_zone = "Z10363623QINZFL0RQYO7"
+restricted = false
+permission_boundary_arn = ""
+restricted_ec2_tags = {}

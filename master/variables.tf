@@ -22,6 +22,7 @@ variable "ec2_ami" {
 
 variable "instance_count" {
   type = string
+  default = 3
 }
 
 variable "kubeconfig_content" {
