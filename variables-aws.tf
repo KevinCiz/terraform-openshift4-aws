@@ -219,3 +219,8 @@ variable "restricted_ec2_tags" {
   type = map(string)
   description = "this tags is for restricted mode"
 }
+
+variable "ec2_vpce_endpoint" {
+  type = string
+  description = "VPCE endpoint for ec2"
+}

@@ -91,3 +91,13 @@ and therefore are force to implicitly assume that the list is of aws_lb_target_g
 helps to decide if the target_group_arns is of length (target_group_arns_length) or (target_group_arns_length - 1)
 EOF
 }
+
+variable "restricted" {
+  type = bool
+  description = "Set to true if we want to specify Permission boundary and Add Ec2 Tagging"
+}
+
+variable "permission_boundary_arn" {
+  type = string
+  description = "iam permission boundary arn"
+}

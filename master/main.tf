@@ -19,7 +19,7 @@ resource "aws_iam_instance_profile" "master" {
 resource "aws_iam_role" "master_role" {
   name = "${var.cluster_id}-master-role"
   path = "/"
-
+  permissions_boundary = var.restricted ? var.permission_boundary_arn : ""
   assume_role_policy = <<EOF
 {
     "Version": "2012-10-17",

@@ -41,6 +41,11 @@ platform:
     %{~ endfor ~}
     amiID: ${var.ami}
     hostedZone: ${var.private_route53_hostedZone}
+    %{if var.ec2_vpce_endpoint != ""}
+    serviceEndpoint:
+    - name: ec2
+      url: ${var.ec2_vpce_endpoint}
+    %{endif}
 fips: false
 pullSecret: '${var.openshift_pull_secret}'
 sshKey: '${var.public_ssh_key}'

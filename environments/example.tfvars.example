@@ -11,3 +11,8 @@ private_hosted_zone = "Z10363623QINZFL0RQYO7"
 restricted = false
 permission_boundary_arn = ""
 restricted_ec2_tags = {}
+airgapped = {
+    enabled    = true
+    repository = "mirror-registry.com:8443/ocp4/openshift4"
+  }
+ec2_vpce_endpoint = "xxxxxx"

@@ -42,20 +42,10 @@ resource "aws_s3_bucket_ownership_controls" "ignition" {
 resource "aws_s3_bucket_public_access_block" "ignition" {
   bucket = aws_s3_bucket.ignition.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
-}
-
-resource "aws_s3_bucket_acl" "ignition" {
-  depends_on = [
-    aws_s3_bucket_ownership_controls.ignition,
-    aws_s3_bucket_public_access_block.ignition,
-  ]
-
-  bucket = aws_s3_bucket.ignition.id
-  acl    = "public-read"
+  block_public_acls       = var.restricted ? true : false
+  block_public_policy     = var.restricted ? true : false
+  ignore_public_acls      = var.restricted ? true : false
+  restrict_public_buckets = var.restricted ? true : false
 }
 
 resource "aws_s3_object" "ignition" {

@@ -165,3 +165,8 @@ variable "private_route53_hostedZone" {
   type = string
   description = "Private Route53 HostedZone id"
 }
+
+variable "ec2_vpce_endpoint" {
+  type = string
+  description = "VPCE endpoint id for ec2 gateway"
+}

@@ -12,6 +12,15 @@ provider "aws" {
   region = var.aws_region
 
   skip_region_validation = var.aws_skip_region_validation
+
+  # endpoints {
+  #   ec2     = lookup(var.custom_endpoints, "ec2", null)
+  #   elb     = lookup(var.custom_endpoints, "elasticloadbalancing", null)
+  #   iam     = lookup(var.custom_endpoints, "iam", null)
+  #   route53 = lookup(var.custom_endpoints, "route53", null)
+  #   s3      = lookup(var.custom_endpoints, "s3", null)
+  #   sts     = lookup(var.custom_endpoints, "sts", null)
+  # }
 }
 
 module "bootstrap" {
@@ -57,6 +66,8 @@ module "masters" {
   ec2_ami                  = var.rhcos_image
   user_data_ign            = module.installer.master_ign
   publish_strategy         = var.aws_publish_strategy
+  restricted               = var.restricted
+  permission_boundary_arn  = var.permission_boundary_arn
 }
 
 module "iam" {
@@ -124,4 +135,5 @@ module "installer" {
   public_ssh_key                    = var.public_ssh_key
   openshift_additional_trust_bundle = var.openshift_additional_trust_bundle
   byo_dns                           = var.openshift_byo_dns
+  ec2_vpce_endpoint                 = var.ec2_vpce_endpoint
 }
